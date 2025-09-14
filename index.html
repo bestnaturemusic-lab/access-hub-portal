@@ -17,9 +17,10 @@
     <header>
       <h1 class="header-title">AccessHub Central</h1>
       <p class="subtitle">Your unified portal for access coordination tools & references</p>
-      <div class="access-info" id="connectionStatus">
-        <i class="fas fa-cloud"></i> Initializing...
-      </div>
+    <!-- Add this inside <header> -->
+<div class="connection-badge" id="firebaseStatus">
+  <i class="fas fa-circle-notch fa-spin"></i> Initializing...
+</div>
     </header>
 
     <!-- CONTROLS -->
@@ -185,4 +186,5 @@
     }
   </script>
 </body>
+
 </html>
