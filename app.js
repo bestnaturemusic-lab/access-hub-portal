@@ -14,24 +14,52 @@ const db = firebase.firestore(firebaseApp);
 
 // 🌐 OFFLINE DETECTION
 let isOnline = navigator.onLine;
-const connectionStatus = document.getElementById('connectionStatus');
 
-function updateConnectionStatus() {
-  isOnline = navigator.onLine;
-  if (connectionStatus) {
-    if (isOnline) {
-      connectionStatus.innerHTML = '<i class="fas fa-cloud"></i> Online • Syncing...';
-      connectionStatus.style.color = '#28a745';
-      setTimeout(syncPendingOperations, 1000);
-    } else {
-      connectionStatus.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline • Working locally';
-      connectionStatus.style.color = '#dc3545';
-    }
+// 🌐 ENHANCED CONNECTION STATUS WITH FIREBASE CHECK
+async function updateConnectionStatus() {
+  const statusElement = document.getElementById('firebaseStatus');
+  if (!statusElement) return;
+
+  // First, check browser online/offline
+  if (!navigator.onLine) {
+    statusElement.className = 'connection-badge offline';
+    statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline (Working Locally)';
+    isOnline = false;
+    return;
+  }
+
+  // Browser is online — now test Firebase connectivity
+  try {
+    // Test Firestore with a lightweight read
+    await db.collection('applications').limit(1).get();
+    
+    statusElement.className = 'connection-badge online';
+    statusElement.innerHTML = '<i class="fas fa-cloud"></i> Connected to Firebase';
+    isOnline = true;
+  } catch (error) {
+    console.warn('Firebase connectivity test failed:', error);
+    statusElement.className = 'connection-badge error';
+    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Online but Firebase Unreachable';
+    isOnline = false; // Treat as offline for write operations
   }
 }
 
-window.addEventListener('online', updateConnectionStatus);
-window.addEventListener('offline', updateConnectionStatus);
+// 🔍 PERIODICALLY CHECK FIREBASE CONNECTION
+function startConnectionMonitoring() {
+  // Check every 30 seconds
+  setInterval(() => {
+    updateConnectionStatus();
+  }, 30000);
+
+  // Also check when browser comes back online
+  window.addEventListener('online', () => {
+    setTimeout(updateConnectionStatus, 1000); // Wait 1 second after online event
+  });
+
+  window.addEventListener('offline', () => {
+    updateConnectionStatus();
+  });
+}
 
 // 🗃️ INDEXEDDB SETUP
 const DB_NAME = 'AccessHubDB';
@@ -100,17 +128,9 @@ async function deleteFromIndexedDB(storeName, id) {
 }
 
 // 🔐 PRODUCTION MODE SECURITY CHECK
-// In production, only allow writes if user is authenticated
-// (You can enable Firebase Auth later)
 function isUserAuthorizedForWrite() {
   // For now, allow all writes since you haven't set up login
-  // When you enable Firebase Auth, replace with: return firebase.auth().currentUser !== null;
-  
-  // 👇 TEMPORARY: Allow all writes (remove this in true production)
   return true;
-  
-  // 👇 FUTURE: Uncomment this when you add login
-  // return firebase.auth().currentUser !== null;
 }
 
 function requireAuthForWrite() {
@@ -214,6 +234,7 @@ function attachEventListeners() {
     }
   });
 
+  // Initialize connection status
   updateConnectionStatus();
 }
 
@@ -288,6 +309,7 @@ async function syncPendingOperations() {
 
   const pendingOps = await getAllFromIndexedDB('pending_operations');
   if (pendingOps.length === 0) {
+    const connectionStatus = document.getElementById('connectionStatus');
     if (connectionStatus) {
       connectionStatus.innerHTML = '<i class="fas fa-cloud"></i> Online • All synced';
     }
@@ -331,6 +353,7 @@ async function syncPendingOperations() {
 
   await loadApps();
   
+  const connectionStatus = document.getElementById('connectionStatus');
   if (connectionStatus) {
     connectionStatus.innerHTML = '<i class="fas fa-cloud"></i> Online • All synced';
   }
@@ -589,7 +612,6 @@ function closeModal(modalId) {
 
 // 💾 SAVE APPLICATION — WITH AUTH CHECK
 async function saveApp() {
-  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
   if (!requireAuthForWrite()) return;
 
   const editAppId = document.getElementById('editAppId').value;
@@ -760,7 +782,6 @@ async function saveApp() {
 
 // 💾 SAVE EXCEL FILE — WITH AUTH CHECK
 async function saveExcel() {
-  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
   if (!requireAuthForWrite()) return;
 
   const appId = document.getElementById('currentAppId').value;
@@ -834,7 +855,6 @@ async function saveExcel() {
 
 // 🗑️ DELETE APP — WITH AUTH CHECK
 async function requestDeleteApp(appId) {
-  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
   if (!requireAuthForWrite()) return;
 
   deleteTarget = { type: 'app', id: appId };
@@ -867,7 +887,6 @@ async function requestDeleteApp(appId) {
 
 // 🗑️ DELETE EXCEL — WITH AUTH CHECK
 async function requestDeleteExcel(appId, excelId) {
-  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
   if (!requireAuthForWrite()) return;
 
   deleteTarget = { type: 'excel', appId, excelId };
@@ -1073,4 +1092,5 @@ document.addEventListener('DOMContentLoaded', () => {
   attachEventListeners();
   loadApps();
   updateConnectionStatus();
+  startConnectionMonitoring(); // ✅ Start monitoring connection status
 });
