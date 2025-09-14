@@ -536,4 +536,37 @@ header {
     padding: 30px 20px;
     margin: 10px;
   }
+
+}
+
+/* 🔌 FIREBASE CONNECTION STATUS BADGE */
+.connection-badge {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 12px;
+  color: white;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.connection-badge.online {
+  background: #28a745; /* Green */
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+}
+
+.connection-badge.offline {
+  background: #dc3545; /* Red */
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+}
+
+.connection-badge.error {
+  background: #ffc107; /* Yellow */
+  color: #212529;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+
+.connection-badge i {
+  margin-right: 6px;
 }
