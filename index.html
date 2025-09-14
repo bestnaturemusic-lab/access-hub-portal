@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AccessHub Central</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!-- HEADER -->
+  <div class="container">
+    <header>
+      <h1 class="header-title">AccessHub Central</h1>
+      <p class="subtitle">Your unified portal for access coordination tools & references</p>
+      <div class="access-info" id="connectionStatus">
+        <i class="fas fa-cloud"></i> Initializing...
+      </div>
+    </header>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search applications or Excel files..." />
+      </div>
+      <div class="filter-group">
+        <button class="btn btn-outline" id="filterAll">
+          <i class="fas fa-layer-group"></i> All
+        </button>
+        <button class="btn btn-outline" id="filterFrequent">
+          <i class="fas fa-chart-line"></i> Frequent
+        </button>
+        <button class="btn btn-outline" id="filterWithExcel">
+          <i class="fas fa-file-excel"></i> With Excel
+        </button>
+        <button class="btn btn-outline" id="filterRecent">
+          <i class="fas fa-clock"></i> Recent
+        </button>
+        <button class="btn btn-primary" id="btnAddApp">
+          <i class="fas fa-plus"></i> Add Application
+        </button>
+        <button class="btn btn-accent" id="btnAllExcel">
+          <i class="fas fa-table"></i> All Excel Files
+        </button>
+      </div>
+    </div>
+
+    <!-- APPS GRID -->
+    <div id="appsContainer" class="apps-grid fade-in">
+      <div class="empty-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <h3>Loading applications...</h3>
+        <p>Please wait while we load your data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <!-- Add/Edit Application Modal -->
+  <div id="addAppModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-modal" id="closeAddAppModal">&times;</span>
+      <h2 class="modal-title"><i class="fas fa-plus-circle"></i> <span id="modalTitle">Add New Application</span></h2>
+      
+      <input type="hidden" id="editAppId" />
+      
+      <div class="form-group">
+        <label><i class="fas fa-tag"></i> Application Name *</label>
+        <input type="text" id="appName" class="form-control" placeholder="e.g., Smart Sense" required />
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-link"></i> Application URL *</label>
+        <input type="url" id="appUrl" class="form-control" placeholder="https://example.com" required />
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-align-left"></i> Description</label>
+        <textarea id="appDesc" class="form-control" rows="3" placeholder="What does this application do?"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-file-excel"></i> Excel Files</label>
+        <div id="excelFilesContainer">
+          <!-- Excel file inputs will be added here by JavaScript -->
+        </div>
+        <button class="btn btn-outline" style="margin-top:16px; width: auto;" id="btnAddExcelInput">
+          <i class="fas fa-plus"></i> Add Excel File
+        </button>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelAddApp">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="btn btn-primary" id="btnSaveApp">
+          <i class="fas fa-save"></i> <span id="saveBtnText">Save Application</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Excel Modal -->
+  <div id="addExcelModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-modal" id="closeAddExcelModal">&times;</span>
+      <h2 class="modal-title"><i class="fas fa-file-excel"></i> <span id="excelModalTitle">Add Excel File</span></h2>
+      
+      <input type="hidden" id="currentAppId" />
+      <input type="hidden" id="editExcelId" />
+      
+      <div class="form-group">
+        <label><i class="fas fa-file-signature"></i> Excel File Name *</label>
+        <input type="text" id="excelName" class="form-control" placeholder="e.g., GCN Positioning by Wave" required />
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-link"></i> Excel File URL *</label>
+        <input type="url" id="excelUrl" class="form-control" placeholder="https://sharepoint.com/..." required />
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-flag"></i> Status</label>
+        <select id="excelStatus" class="form-control">
+          <option value="active">Active</option>
+          <option value="pending">Pending Update</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelAddExcel">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="btn btn-success" id="btnSaveExcel">
+          <i class="fas fa-save"></i> <span id="saveExcelBtnText">Save Excel File</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Excel Files Modal -->
+  <div id="allExcelModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-modal" id="closeAllExcelModal">&times;</span>
+      <h2 class="modal-title"><i class="fas fa-table"></i> All Excel Files</h2>
+      <div id="allExcelContainer">
+        <!-- Excel files will be listed here by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="confirm-dialog">
+      <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
+      <p id="confirmMessage">Are you sure you want to delete this item?</p>
+      <div class="confirm-buttons">
+        <button class="btn btn-outline" id="btnCancelDelete">Cancel</button>
+        <button class="btn btn-danger" id="confirmYesBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ FIREBASE COMPAT SDK — LOADED VIA SCRIPT TAGS (NO MODULE) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- ✅ YOUR APP LOGIC -->
+  <script src="app.js"></script>
+
+  <!-- ✅ SERVICE WORKER FOR OFFLINE -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('✅ Service Worker registered'))
+          .catch(err => console.log('❌ Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

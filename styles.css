@@ -1,0 +1,539 @@
+/* 🎨 GLOBAL VARIABLES & RESET */
+:root {
+  --primary: #0056b3;     /* HCA Primary Blue */
+  --secondary: #00a8e8;   /* HCA Secondary Teal */
+  --accent: #ff6b35;      /* HCA Accent Coral */
+  --light: #f8f9fa;       /* Light BG */
+  --dark: #212529;        /* Dark Text */
+  --success: #28a745;
+  --danger: #dc3545;
+  --gray: #6c757d;
+  --light-gray: #e9ecef;
+  --shadow: 0 6px 16px rgba(0, 86, 179, 0.12);
+  --shadow-hover: 0 12px 24px rgba(0, 86, 179, 0.2);
+  --radius: 16px;
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f0f4f8 0%, #e6ebf0 100%);
+  min-height: 100vh;
+  padding: 24px;
+  color: var(--dark);
+}
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+/* 🏥 HEADER STYLES */
+header {
+  text-align: center;
+  background: white;
+  padding: 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 32px;
+}
+
+.header-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--gray);
+  margin-top: 8px;
+}
+
+.access-info {
+  font-size: 0.95rem;
+  color: var(--gray);
+  background: var(--light);
+  padding: 8px 20px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-top: 16px;
+  border: 1px solid var(--light-gray);
+}
+
+/* 🔍 SEARCH & FILTER CONTROLS */
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 16px 24px;
+  padding-left: 52px;
+  border: 2px solid var(--light-gray);
+  border-radius: 60px;
+  font-size: 1.1rem;
+  background: white;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+  font-size: 1.2rem;
+}
+
+.filter-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 🎛️ BUTTON STYLES */
+.btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition);
+  text-decoration: none;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: #004494; }
+
+.btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+.btn-outline:hover { background: rgba(0, 86, 179, 0.05); }
+
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: #e55a2b; }
+
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+
+/* 📱 RESPONSIVE GRID FOR APPLICATIONS */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 32px;
+}
+
+/* 🖼️ APPLICATION CARD STYLES */
+.app-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.app-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.app-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.3;
+  max-width: 85%;
+}
+
+.app-meta {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.access-info-inline {
+  font-size: 0.85rem;
+  color: var(--gray);
+  background: var(--light);
+  padding: 8px 16px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+/* 🎯 ACTION BUTTONS INSIDE CARD */
+.action-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 12px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.app-btn:hover {
+  transform: translateX(4px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.app-btn i {
+  min-width: 24px;
+  text-align: center;
+}
+
+.btn-open-app { background: linear-gradient(90deg, var(--primary), #0066cc); color: white; }
+.btn-open-app:hover { background: linear-gradient(90deg, #004494, #0055aa); }
+
+.btn-open-excel { background: linear-gradient(90deg, var(--secondary), #00bcd4); color: white; }
+.btn-open-excel:hover { background: linear-gradient(90deg, #008db9, #0097a7); }
+
+.btn-add-excel {
+  background: var(--light);
+  color: var(--primary);
+  border: 2px dashed var(--primary);
+}
+.btn-add-excel:hover {
+  background: rgba(0, 86, 179, 0.05);
+  border-style: solid;
+}
+
+/* 📊 EXCEL FILES SECTION */
+.excel-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--light-gray);
+}
+
+.excel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.excel-title {
+  font-weight: 700;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.excel-count {
+  background: var(--secondary);
+  color: white;
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.excel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.excel-item {
+  padding: 16px;
+  background: var(--light);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.excel-name {
+  font-weight: 600;
+  color: var(--dark);
+  max-width: 70%;
+}
+
+.excel-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.excel-status {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-active { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-archived { background: #f8d7da; color: #721c24; }
+
+/* 🖼️ MODAL STYLES */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 24px;
+  padding: 40px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.close-modal {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--gray);
+  transition: var(--transition);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal:hover {
+  background: var(--light);
+  color: var(--danger);
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 📝 FORM STYLES */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: var(--dark);
+  font-size: 1.05rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--light-gray);
+  border-radius: 16px;
+  font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.15);
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-row .form-group {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.modal-footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 2px solid var(--light-gray);
+}
+
+/* 🚫 EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+}
+
+.empty-state i {
+  font-size: 5rem;
+  color: var(--light-gray);
+  margin-bottom: 24px;
+}
+
+.empty-state h3 {
+  font-size: 1.8rem;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+
+/* 🌟 ANIMATIONS */
+.recent-pulse {
+  animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(0, 168, 232, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 168, 232, 0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ❗ CONFIRMATION DIALOG */
+.confirm-dialog {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.confirm-dialog h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--danger);
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* 📱 RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+  }
+  header {
+    padding: 24px 20px;
+  }
+  .controls {
+    flex-direction: column;
+  }
+  .search-box {
+    min-width: auto;
+  }
+  .apps-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .app-card {
+    padding: 24px;
+  }
+  .modal-content {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+}
