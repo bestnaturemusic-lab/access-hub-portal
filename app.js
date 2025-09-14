@@ -1,4 +1,4 @@
-// ✅ FIREBASE COMPAT SDK — NO IMPORT STATEMENTS
+// 🚀 INITIALIZE FIREBASE (COMPAT SDK - WORKS WITH file://)
 const firebaseConfig = {
   apiKey: "AIzaSyDtAZFSvPRVaJzVGVd7xHxdIRfM1KEPruE",
   authDomain: "access-coordinator-portal.firebaseapp.com",
@@ -8,7 +8,7 @@ const firebaseConfig = {
   appId: "1:1095681155011:web:3b52fc93641d8153f56776"
 };
 
-// ✅ INITIALIZE FIREBASE COMPAT
+// Initialize Firebase
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(firebaseApp);
 
@@ -97,6 +97,28 @@ async function deleteFromIndexedDB(storeName, id) {
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
+}
+
+// 🔐 PRODUCTION MODE SECURITY CHECK
+// In production, only allow writes if user is authenticated
+// (You can enable Firebase Auth later)
+function isUserAuthorizedForWrite() {
+  // For now, allow all writes since you haven't set up login
+  // When you enable Firebase Auth, replace with: return firebase.auth().currentUser !== null;
+  
+  // 👇 TEMPORARY: Allow all writes (remove this in true production)
+  return true;
+  
+  // 👇 FUTURE: Uncomment this when you add login
+  // return firebase.auth().currentUser !== null;
+}
+
+function requireAuthForWrite() {
+  if (!isUserAuthorizedForWrite()) {
+    alert('🔒 Access Denied\nPlease contact your administrator to make changes.');
+    return false;
+  }
+  return true;
 }
 
 // 🧠 GLOBAL STATE
@@ -303,6 +325,7 @@ async function syncPendingOperations() {
       await deleteFromIndexedDB('pending_operations', op.id);
     } catch (error) {
       console.error('Error syncing:', error);
+      // Keep in queue to retry later
     }
   }
 
@@ -313,9 +336,7 @@ async function syncPendingOperations() {
   }
 }
 
-// 🖼️ RENDER APPLICATIONS (same logic as before — omitted for brevity)
-// ... (keep your existing renderApps function)
-
+// 🖼️ RENDER APPLICATIONS
 function renderApps() {
   const container = document.getElementById('appsContainer');
   if (!container) return;
@@ -566,8 +587,11 @@ function closeModal(modalId) {
   if (modal) modal.style.display = 'none';
 }
 
-// 💾 SAVE APPLICATION — OFFLINE-FIRST
+// 💾 SAVE APPLICATION — WITH AUTH CHECK
 async function saveApp() {
+  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
+  if (!requireAuthForWrite()) return;
+
   const editAppId = document.getElementById('editAppId').value;
   const name = document.getElementById('appName').value.trim();
   const url = document.getElementById('appUrl').value.trim();
@@ -647,7 +671,7 @@ async function saveApp() {
         }
       }
 
-      alert('✅ Saved to cloud!');
+      alert('✅ Application saved successfully!');
     } else {
       if (editAppId) {
         const existingApp = apps.find(a => a.id === editAppId);
@@ -723,19 +747,22 @@ async function saveApp() {
         data: newAppData
       });
 
-      alert('✅ Saved locally. Will sync when online.');
+      alert('✅ Application saved locally. Will sync when online.');
     }
 
     closeModal('addAppModal');
     loadApps();
   } catch (error) {
     console.error('Error saving app:', error);
-    alert('Failed to save application.');
+    alert('Failed to save application. Check console for details.');
   }
 }
 
-// 💾 SAVE EXCEL FILE
+// 💾 SAVE EXCEL FILE — WITH AUTH CHECK
 async function saveExcel() {
+  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
+  if (!requireAuthForWrite()) return;
+
   const appId = document.getElementById('currentAppId').value;
   const excelId = document.getElementById('editExcelId').value;
   const name = document.getElementById('excelName').value.trim();
@@ -764,7 +791,7 @@ async function saveExcel() {
           addedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
-      alert('✅ Excel saved to cloud!');
+      alert('✅ Excel file saved successfully!');
     } else {
       if (excelId) {
         const excelFiles = await getAllFromIndexedDB('excel_files');
@@ -794,21 +821,24 @@ async function saveExcel() {
         data: { name, url, status, appId }
       });
 
-      alert('✅ Excel saved locally. Will sync when online.');
+      alert('✅ Excel file saved locally. Will sync when online.');
     }
 
     closeModal('addExcelModal');
     loadApps();
   } catch (error) {
     console.error('Error saving Excel:', error);
-    alert('Failed to save Excel file.');
+    alert('Failed to save Excel file. Check console for details.');
   }
 }
 
-// 🗑️ DELETE APP
+// 🗑️ DELETE APP — WITH AUTH CHECK
 async function requestDeleteApp(appId) {
+  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
+  if (!requireAuthForWrite()) return;
+
   deleteTarget = { type: 'app', id: appId };
-  document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this application and all its Excel files?';
+  document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this application and all its Excel files? This cannot be undone.';
   document.getElementById('confirmYesBtn').onclick = async () => {
     try {
       if (isOnline) {
@@ -824,21 +854,24 @@ async function requestDeleteApp(appId) {
           appId: appId
         });
       }
-      alert('🗑️ Application deleted!');
+      alert('🗑️ Application deleted successfully!');
       loadApps();
     } catch (error) {
       console.error('Error deleting app:', error);
-      alert('Failed to delete application.');
+      alert('Failed to delete application. Check console for details.');
     }
     closeModal('confirmModal');
   };
   document.getElementById('confirmModal').style.display = 'flex';
 }
 
-// 🗑️ DELETE EXCEL
+// 🗑️ DELETE EXCEL — WITH AUTH CHECK
 async function requestDeleteExcel(appId, excelId) {
+  // 🔐 PRODUCTION SECURITY: Check if user is authorized to write
+  if (!requireAuthForWrite()) return;
+
   deleteTarget = { type: 'excel', appId, excelId };
-  document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this Excel file?';
+  document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this Excel file? This cannot be undone.';
   document.getElementById('confirmYesBtn').onclick = async () => {
     try {
       if (isOnline) {
@@ -851,11 +884,11 @@ async function requestDeleteExcel(appId, excelId) {
           excelId: excelId
         });
       }
-      alert('🗑️ Excel file deleted!');
+      alert('🗑️ Excel file deleted successfully!');
       loadApps();
     } catch (error) {
       console.error('Error deleting Excel:', error);
-      alert('Failed to delete Excel file.');
+      alert('Failed to delete Excel file. Check console for details.');
     }
     closeModal('confirmModal');
   };
